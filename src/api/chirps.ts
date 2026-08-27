@@ -2,11 +2,12 @@ import type { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError, NotFoundError } from "./customErrors.js";
 import { createChirp, getChirp, getChirps } from "../db/queries/chirps.js";
+import { getBearerToken, validateJWT } from "../auth.js";
+import { config } from "../config.js";
 
 export async function handleCreateChirp(req: Request, res: Response) {
     type parameters = {
         body: string;
-        userId: string;
     };
 
     const params: parameters = req.body;
@@ -18,19 +19,21 @@ export async function handleCreateChirp(req: Request, res: Response) {
             `Chirp is too long. Max length is ${maxChirpLength}`,
         );
     }
+    const token = getBearerToken(req)
+    const userId = validateJWT(token, config.jwt.secret);
+
+    const cleanBody = replaceProfaneWords(params.body);
 
     const chirp = await createChirp({
-        body: params.body,
-        userId: params.userId,
+        body: cleanBody,
+        userId: userId,
     });
-
-    const profaneBody = replaceProfaneWords(params.body);
 
     respondWithJSON(res, 201, {
         id: chirp.id,
         createdAt: chirp.createdAt,
         updatedAt: chirp.updatedAt,
-        body: profaneBody,
+        body: cleanBody,
         userId: chirp.userId,
     });
 }
