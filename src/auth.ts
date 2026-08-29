@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { BadRequestError, UnauthorizedError, UserNotAuthenticatedError } from "./api/customErrors.js";
 import { Request } from "express";
+import crypto from "crypto";
 
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
 
@@ -75,4 +76,8 @@ export function extractBearerToken(header: string) {
         throw new BadRequestError("Malformed authorization header");
       }
       return splitAuth[1];
+}
+
+export function makeRefreshToken() {
+    return crypto.randomBytes(32).toString("hex");
 }

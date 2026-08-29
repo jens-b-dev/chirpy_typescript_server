@@ -18,6 +18,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { handleCreateUser } from "./api/users.js";
 import { handleLogin } from "./api/auth.js";
+import { handleRefresh, handleRevoke } from "./api/refresh.js";
 
 export const app = express();
 const PORT = 8080;
@@ -39,6 +40,12 @@ app.post("/api/users", (req, res, next) => {
 });
 app.post("/api/login", (req, res, next) => {
     Promise.resolve(handleLogin(req, res)).catch(next);
+});
+app.post("/api/refresh", (req, res, next) => {
+    Promise.resolve(handleRefresh(req, res)).catch(next);
+});
+app.post("/api/revoke", (req, res, next) => {
+    Promise.resolve(handleRevoke(req, res)).catch(next);
 });
 app.post("/api/chirps", (req, res, next) => {
     Promise.resolve(handleCreateChirp(req, res)).catch(next);
