@@ -16,7 +16,7 @@ import postgres from "postgres";
 import { config } from "./config.js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
-import { handleCreateUser } from "./api/users.js";
+import { handleCreateUser, handleUpdateUser } from "./api/users.js";
 import { handleLogin } from "./api/auth.js";
 import { handleRefresh, handleRevoke } from "./api/refresh.js";
 
@@ -37,6 +37,9 @@ app.get("/api/healthz", (req, res, next) => {
 });
 app.post("/api/users", (req, res, next) => {
     Promise.resolve(handleCreateUser(req, res)).catch(next);
+});
+app.put("/api/users", (req, res, next) => {
+    Promise.resolve(handleUpdateUser(req, res)).catch(next);
 });
 app.post("/api/login", (req, res, next) => {
     Promise.resolve(handleLogin(req, res)).catch(next);
