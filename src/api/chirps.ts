@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError } from "./customErrors.js";
-import { createChirp, getChirp, getChirps } from "../db/queries/chirps.js";
+import { BadRequestError, ForbiddenError, NotFoundError } from "./customErrors.js";
+import { createChirp, deleteChirp, getChirp, getChirps } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 
@@ -57,6 +57,35 @@ export async function handleGetChirp(req: Request, res: Response) {
     }
 
     respondWithJSON(res, 200, chirp);
+}
+
+export async function handleDeleteCrhip(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (typeof id !== "string") {
+        throw new BadRequestError("Invalid chirp id");
+    }
+
+    const token = getBearerToken(req);
+    const userId = validateJWT(token, config.jwt.secret);
+
+    const chirp = await getChirp(id);
+
+    if (!chirp) {
+        throw new NotFoundError(`Chirp with id ${id} not found`);
+    }
+
+    if (chirp.userId !== userId) {
+        throw new ForbiddenError("You are not authorized to delete this chirp");
+    }
+
+    const deleted = await deleteChirp(id, userId);
+
+    if (!deleted) {
+        throw new NotFoundError(`Chirp with id ${id} not found`);
+    }
+
+    respondWithJSON(res, 204, chirp);
 }
 
 function replaceProfaneWords(text: string): string {

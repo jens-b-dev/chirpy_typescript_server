@@ -44,6 +44,11 @@ export function middlewareErrorHandler(err: any, req: Request, res: Response, ne
         message = err.message;
     }
 
+    if (err instanceof UnauthorizedError) {
+        statusCode = 401;
+        message = err.message;
+    }
+
     if (statusCode >= 500) {
         console.error(err);
     }

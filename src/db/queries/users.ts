@@ -24,12 +24,24 @@ export async function getUserByEmail(email: string) {
     return user;
 }
 
-export async function updateUser(user: NewUser, userId: string) {
+export async function updateUser(userID: string, email: string, hashedPassword: string) {
     const [result] = await db
         .update(users)
         .set({
-            email: user.email,
-            hashedPassword: user.hashedPassword,
+            email: email,
+            hashedPassword: hashedPassword,
+        })
+        .where(eq(users.id, userID))
+        .returning();
+
+    return result;
+}
+
+export async function updateUserToRed(userId: string) {
+    const [result] = await db
+        .update(users)
+        .set({
+            isChirpyRed: true,
         })
         .where(eq(users.id, userId))
         .returning();

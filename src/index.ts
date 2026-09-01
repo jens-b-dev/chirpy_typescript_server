@@ -9,6 +9,7 @@ import { handleMetrics } from "./api/metrics.js";
 import { reset } from "./api/reset.js";
 import {
     handleCreateChirp,
+    handleDeleteCrhip,
     handleGetChirp,
     handleGetChirps,
 } from "./api/chirps.js";
@@ -19,6 +20,7 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { handleCreateUser, handleUpdateUser } from "./api/users.js";
 import { handleLogin } from "./api/auth.js";
 import { handleRefresh, handleRevoke } from "./api/refresh.js";
+import { handleWebhook } from "./api/webhooks.js";
 
 export const app = express();
 const PORT = 8080;
@@ -59,6 +61,13 @@ app.get("/api/chirps", (req, res, next) => {
 app.get("/api/chirps/:id", (req, res, next) => {
     Promise.resolve(handleGetChirp(req, res)).catch(next);
 });
+app.delete("/api/chirps/:id", (req, res, next) => {
+    Promise.resolve(handleDeleteCrhip(req, res)).catch(next);
+});
+app.post("/api/polka/webhooks", (req, res, next) => {
+    Promise.resolve(handleWebhook(req, res)).catch(next);
+});
+
 
 app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(handleMetrics(req, res)).catch(next);
@@ -66,6 +75,7 @@ app.get("/admin/metrics", (req, res, next) => {
 app.post("/admin/reset", (req, res, next) => {
     Promise.resolve(reset(req, res)).catch(next);
 });
+
 
 app.use(middlewareErrorHandler);
 

@@ -36,6 +36,13 @@
       "when": 1788039786367,
       "tag": "0004_thankful_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788298067941,
+      "tag": "0005_classy_magik",
+      "breakpoints": true
     }
   ]
 }
